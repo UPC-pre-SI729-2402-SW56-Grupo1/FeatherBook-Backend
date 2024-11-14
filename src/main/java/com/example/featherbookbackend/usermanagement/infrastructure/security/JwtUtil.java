@@ -15,9 +15,10 @@ public class JwtUtil {
 
     private final String SECRET_KEY = "mySecretKey";  // Clave secreta para firmar el JWT
 
-    // Genera un token JWT para el usuario
-    public String generateToken(String username) {
+    // Genera un token JWT para el usuario, incluyendo su rol
+    public String generateToken(String username, String role) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("role", role);  // Añadimos el rol en los claims
         return createToken(claims, username);
     }
 
@@ -29,6 +30,11 @@ public class JwtUtil {
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))  // Token válido por 10 horas
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
+    }
+
+    // Método para extraer el rol del token JWT
+    public String extractRole(String token) {
+        return extractClaim(token, claims -> claims.get("role", String.class));
     }
 
     // Extrae el username del token JWT
