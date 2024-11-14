@@ -53,11 +53,10 @@ public class UserController {
                 .findFirst();
 
         if (user.isPresent()) {
-            String jwtToken = jwtUtil.generateToken(user.get().getUsername());
+            String jwtToken = jwtUtil.generateToken(user.get().getUsername(), user.get().getRole());
             return ResponseEntity.ok(new UserLoginResponse(jwtToken));
         } else {
             return ResponseEntity.status(401).body(null);  // Unauthorized
         }
     }
-
 }

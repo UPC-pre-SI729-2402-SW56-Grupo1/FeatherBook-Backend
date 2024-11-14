@@ -45,6 +45,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/api/users/login", "/api/users/register").permitAll()
+                .antMatchers("/api/admin/**").hasAuthority("ADMIN")  // Acceso solo para ADMIN
+                .antMatchers("/api/user/**").hasAuthority("USER")    // Acceso solo para USER
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

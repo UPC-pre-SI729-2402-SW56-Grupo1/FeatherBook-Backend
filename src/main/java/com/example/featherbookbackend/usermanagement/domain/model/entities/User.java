@@ -35,6 +35,9 @@ public class User {
 
     private int subscriptionLevel;
 
+    @NotBlank
+    private String role;
+
     // Relationships
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<BookHistory> booksHistory;
