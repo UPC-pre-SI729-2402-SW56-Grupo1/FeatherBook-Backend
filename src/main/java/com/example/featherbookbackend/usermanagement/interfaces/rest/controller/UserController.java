@@ -49,7 +49,9 @@ public class UserController {
 
     @Operation(summary = "Login user and generate JWT token", description = "Authenticates user and returns JWT token upon success")
     @PostMapping("/login")
-    public ResponseEntity<UserLoginResponse> loginUser(@RequestBody UserLoginRequest loginRequest) {
+    public ResponseEntity<UserLoginResponse> loginUser(
+            @Parameter(description = "User login credentials", required = true)
+            @RequestBody UserLoginRequest loginRequest) {
         Optional<User> user = userQueryService.getAllUsers()
                 .stream()
                 .filter(u -> u.getEmail().equals(loginRequest.getEmail()) &&
