@@ -14,11 +14,24 @@ public class BookCommandService {
     @Autowired
     private BookRepository bookRepository;
 
+    /**
+     * Creates a new book in the system.
+     *
+     * @param book The book to create.
+     * @return The created book.
+     */
     @Transactional
     public Book createBook(Book book) {
         return bookRepository.save(book);
     }
 
+    /**
+     * Updates an existing book in the system.
+     *
+     * @param bookId The ID of the book to update.
+     * @param updatedBook The updated book details.
+     * @return The updated book, or null if the book doesn't exist.
+     */
     @Transactional
     public Book updateBook(String bookId, Book updatedBook) {
         Optional<Book> book = bookRepository.findById(bookId);
@@ -26,9 +39,14 @@ public class BookCommandService {
             updatedBook.setId(bookId);
             return bookRepository.save(updatedBook);
         }
-        return null;  // Implementar manejo de errores según sea necesario
+        return null;  // TODO: Add appropriate error handling if the book doesn't exist
     }
 
+    /**
+     * Deletes a book by its ID.
+     *
+     * @param bookId The ID of the book to delete.
+     */
     @Transactional
     public void deleteBook(String bookId) {
         bookRepository.deleteById(bookId);
