@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 
 import java.util.Optional;
 
@@ -30,6 +32,7 @@ public class UserController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Operation(summary = "Register a new user", description = "Registers a new user with the provided details")
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody UserRegistrationRequest registrationRequest) {
         User user = new User();
@@ -44,6 +47,7 @@ public class UserController {
         return ResponseEntity.ok("User registered successfully");
     }
 
+    @Operation(summary = "Login user and generate JWT token", description = "Authenticates user and returns JWT token upon success")
     @PostMapping("/login")
     public ResponseEntity<UserLoginResponse> loginUser(@RequestBody UserLoginRequest loginRequest) {
         Optional<User> user = userQueryService.getAllUsers()
