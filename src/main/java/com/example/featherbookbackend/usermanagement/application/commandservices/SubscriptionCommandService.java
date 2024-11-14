@@ -1,5 +1,6 @@
 package com.example.featherbookbackend.usermanagement.application.commandservices;
 
+import com.example.featherbookbackend.shared.infrastructure.PaymentGateway;
 import com.example.featherbookbackend.usermanagement.domain.model.entities.Subscription;
 import com.example.featherbookbackend.usermanagement.infrastructure.repository.SubscriptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,38 +15,51 @@ public class SubscriptionCommandService {
     @Autowired
     private SubscriptionRepository subscriptionRepository;
 
+    @Autowired
+    private PaymentGateway paymentGateway;
+
     /**
-     * Creates a new subscription.
+     * Crea una nueva suscripción y procesa el pago.
      *
-     * @param subscription The subscription to create.
-     * @return The created subscription.
+     * @param subscription La suscripción a crear.
+     * @return La suscripción creada o null si el pago falla.
      */
     @Transactional
     public Subscription createSubscription(Subscription subscription) {
-        return subscriptionRepository.save(subscription);
+        boolean paymentSuccess = paymentGateway.processPayment(subscription.getPrice(), subscription.getUser().getId());
+        if (paymentSuccess) {
+            return subscriptionRepository.save(subscription);
+        }
+        System.out.println("Payment failed for user " + subscription.getUser().getId());
+        return null;  // Implementar manejo de errores en caso de falla de pago
     }
 
     /**
-     * Updates an existing subscription.
+     * Actualiza una suscripción existente y procesa el pago para el nuevo nivel.
      *
-     * @param subscriptionId The ID of the subscription to update.
-     * @param updatedSubscription The updated subscription details.
-     * @return The updated subscription, or null if the subscription doesn't exist.
+     * @param subscriptionId El ID de la suscripción a actualizar.
+     * @param updatedSubscription Los detalles de la suscripción actualizados.
+     * @return La suscripción actualizada o null si el pago falla o la suscripción no existe.
      */
     @Transactional
     public Subscription updateSubscription(String subscriptionId, Subscription updatedSubscription) {
         Optional<Subscription> subscription = subscriptionRepository.findById(subscriptionId);
         if (subscription.isPresent()) {
-            updatedSubscription.setId(subscriptionId);
-            return subscriptionRepository.save(updatedSubscription);
+            // Procesar el pago para la actualización de suscripción
+            boolean paymentSuccess = paymentGateway.processPayment(updatedSubscription.getPrice(), updatedSubscription.getUser().getId());
+            if (paymentSuccess) {
+                updatedSubscription.setId(subscriptionId);
+                return subscriptionRepository.save(updatedSubscription);
+            }
+            System.out.println("Payment failed for user " + updatedSubscription.getUser().getId());
         }
-        return null;  // Implement error handling as necessary
+        return null;  // Implementar manejo de errores adecuado
     }
 
     /**
-     * Deletes a subscription by its ID.
+     * Elimina una suscripción por su ID.
      *
-     * @param subscriptionId The ID of the subscription to delete.
+     * @param subscriptionId El ID de la suscripción a eliminar.
      */
     @Transactional
     public void deleteSubscription(String subscriptionId) {
