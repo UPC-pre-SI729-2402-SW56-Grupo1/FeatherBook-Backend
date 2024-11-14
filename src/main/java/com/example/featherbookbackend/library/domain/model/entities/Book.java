@@ -16,25 +16,25 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @NotBlank
-    @Size(min = 3, max = 100)
+    @NotBlank(message = "Book name is mandatory")
+    @Size(min = 3, max = 100, message = "Book name must be between 3 and 100 characters")
     private String name;
 
-    @NotBlank
-    @Size(max = 500)
+    @NotBlank(message = "Summary is mandatory")
+    @Size(max = 500, message = "Summary must not exceed 500 characters")
     private String summary;
 
-    @NotBlank
+    @NotBlank(message = "Category is mandatory")
     private String category;
 
-    @NotBlank
+    @NotBlank(message = "Book URL is mandatory")
     private String bookUrl;
 
     private int views;
 
     private int totalScore;
 
-    // Relaciones
+    // Relación con comentarios
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Comment> reviews;
 }
