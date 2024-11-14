@@ -3,6 +3,7 @@ package com.example.featherbookbackend.usermanagement.interfaces.rest.controller
 import com.example.featherbookbackend.usermanagement.application.commandservices.UserCommandService;
 import com.example.featherbookbackend.usermanagement.application.queryservices.UserQueryService;
 import com.example.featherbookbackend.usermanagement.domain.model.entities.User;
+import com.example.featherbookbackend.usermanagement.infrastructure.security.JwtUtil;
 import com.example.featherbookbackend.usermanagement.interfaces.rest.resources.UserLoginRequest;
 import com.example.featherbookbackend.usermanagement.interfaces.rest.resources.UserLoginResponse;
 import com.example.featherbookbackend.usermanagement.interfaces.rest.resources.UserRegistrationRequest;
@@ -25,6 +26,9 @@ public class UserController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody UserRegistrationRequest registrationRequest) {
@@ -49,8 +53,7 @@ public class UserController {
                 .findFirst();
 
         if (user.isPresent()) {
-            // Generar un JWT token (simulación)
-            String jwtToken = "simulated-jwt-token";  // Esto debe reemplazarse con un generador de JWT
+            String jwtToken = jwtUtil.generateToken(user.get().getUsername());
             return ResponseEntity.ok(new UserLoginResponse(jwtToken));
         } else {
             return ResponseEntity.status(401).body(null);  // Unauthorized
