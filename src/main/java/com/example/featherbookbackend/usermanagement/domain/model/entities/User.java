@@ -17,25 +17,25 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @NotBlank
-    @Size(min = 3, max = 50)
+    @NotBlank(message = "Username is mandatory")
+    @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
     private String username;
 
-    @NotBlank
-    @Email
+    @NotBlank(message = "Email is mandatory")
+    @Email(message = "Email should be valid")
     private String email;
 
     @NotBlank
     @Pattern(regexp = "^\\d{9}$", message = "Phone must be a 9-digit number")
     private String phone;
 
-    @NotBlank
-    @Size(min = 8)
+    @NotBlank(message = "Password is mandatory")
+    @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
 
     private int subscriptionLevel;
 
-    @NotBlank
+    @NotBlank(message = "Role is mandatory")
     private String role;
 
     // Relationships

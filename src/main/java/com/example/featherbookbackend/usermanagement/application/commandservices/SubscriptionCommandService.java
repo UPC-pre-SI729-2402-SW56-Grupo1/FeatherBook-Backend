@@ -19,18 +19,22 @@ public class SubscriptionCommandService {
     private PaymentGateway paymentGateway;
 
     /**
-     * Crea una nueva suscripción y procesa el pago.
+     * Crea una nueva suscripción y verifica el nivel permitido.
      *
      * @param subscription La suscripción a crear.
-     * @return La suscripción creada o null si el pago falla.
+     * @return La suscripción creada, o null si el nivel de suscripción no es válido.
      */
     @Transactional
     public Subscription createSubscription(Subscription subscription) {
+        if (!isValidSubscriptionLevel(subscription.getLevel())) {
+            System.out.println("Invalid subscription level for user " + subscription.getUser().getId());
+            return null;
+        }
+
         boolean paymentSuccess = paymentGateway.processPayment(subscription.getPrice(), subscription.getUser().getId());
         if (paymentSuccess) {
             return subscriptionRepository.save(subscription);
         }
-        System.out.println("Payment failed for user " + subscription.getUser().getId());
         return null;  // Implementar manejo de errores en caso de falla de pago
     }
 
@@ -64,5 +68,16 @@ public class SubscriptionCommandService {
     @Transactional
     public void deleteSubscription(String subscriptionId) {
         subscriptionRepository.deleteById(subscriptionId);
+    }
+
+    /**
+     * Verifica si el nivel de suscripción es válido.
+     *
+     * @param level Nivel de suscripción.
+     * @return true si es válido, false en caso contrario.
+     */
+    private boolean isValidSubscriptionLevel(int level) {
+        // Definir los niveles permitidos (ejemplo: 1 = Básico, 2 = Premium, etc.)
+        return level >= 1 && level <= 3;  // Asumiendo que hay 3 niveles de suscripción
     }
 }

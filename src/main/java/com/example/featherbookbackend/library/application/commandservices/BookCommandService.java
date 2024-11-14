@@ -15,40 +15,56 @@ public class BookCommandService {
     private BookRepository bookRepository;
 
     /**
-     * Creates a new book in the system.
+     * Crea un nuevo libro si el usuario tiene el rol adecuado.
      *
-     * @param book The book to create.
-     * @return The created book.
+     * @param book El libro a crear.
+     * @param userRole El rol del usuario.
+     * @return El libro creado o null si el rol no es adecuado.
      */
     @Transactional
-    public Book createBook(Book book) {
+    public Book createBook(Book book, String userRole) {
+        if (!userRole.equals("ADMIN")) {
+            System.out.println("User does not have permission to create a book.");
+            return null;
+        }
         return bookRepository.save(book);
     }
 
     /**
-     * Updates an existing book in the system.
+     * Actualiza un libro existente si el usuario tiene el rol adecuado.
      *
-     * @param bookId The ID of the book to update.
-     * @param updatedBook The updated book details.
-     * @return The updated book, or null if the book doesn't exist.
+     * @param bookId El ID del libro a actualizar.
+     * @param updatedBook Los detalles actualizados del libro.
+     * @param userRole El rol del usuario.
+     * @return El libro actualizado o null si el rol no es adecuado.
      */
     @Transactional
-    public Book updateBook(String bookId, Book updatedBook) {
+    public Book updateBook(String bookId, Book updatedBook, String userRole) {
+        if (!userRole.equals("ADMIN")) {
+            System.out.println("User does not have permission to update a book.");
+            return null;
+        }
+
         Optional<Book> book = bookRepository.findById(bookId);
         if (book.isPresent()) {
             updatedBook.setId(bookId);
             return bookRepository.save(updatedBook);
         }
-        return null;  // TODO: Add appropriate error handling if the book doesn't exist
+        return null;
     }
 
     /**
-     * Deletes a book by its ID.
+     * Elimina un libro si el usuario tiene el rol adecuado.
      *
-     * @param bookId The ID of the book to delete.
+     * @param bookId El ID del libro a eliminar.
+     * @param userRole El rol del usuario.
      */
     @Transactional
-    public void deleteBook(String bookId) {
+    public void deleteBook(String bookId, String userRole) {
+        if (!userRole.equals("ADMIN")) {
+            System.out.println("User does not have permission to delete a book.");
+            return;
+        }
         bookRepository.deleteById(bookId);
     }
 }
